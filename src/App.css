@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .App-logo {
@@ -26,6 +28,18 @@
 
 .App-link {
   color: #61dafb;
+}
+
+.error-text {
+  color: red
+}
+
+.root-radio {
+  max-width: 150px;
+}
+
+.radio-help-text {
+  margin-left: 20px;
 }
 
 @keyframes App-logo-spin {
