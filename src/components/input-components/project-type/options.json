@@ -1,0 +1,22 @@
+[
+  {
+    "label": "Advertising Website",
+    "description": "An advertising website is the best way to get your business or product seen. Just enough to make an impact on the web but not enough to make direct sales.",
+    "value": 1000
+  },
+  {
+    "label": "Personal/Business Blog",
+    "description": "A blog is a great way to create valuable content that you can share across the internet. Many people use blogs in place of social media.",
+    "value": 2000
+  },
+  {
+    "label": "E-commerce Application/Website",
+    "description": "E-commerce is the new normal. If you want to sell to the largest possible market, you need an e-commerce app/website.",
+    "value": 3000
+  },
+  {
+    "label": "Business Application/Website",
+    "description": "A business application/website is built to perform a certain amount of your business for you. A business application can take many forms and perform many functions.",
+    "value": 4000
+  }
+]

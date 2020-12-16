@@ -6,11 +6,12 @@ import {
   FormControlLabel,
   makeStyles,
   IconButton,
-  Grow
+  Grow,
 } from "@material-ui/core";
-import { HelpOutlineRounded } from "@material-ui/icons";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { Close, HelpOutlineRounded } from "@material-ui/icons";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import HelpText from "../../help/help-text/help-text";
 
 const useStyles = makeStyles(() => ({
   rootRadio: {},
@@ -22,100 +23,84 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function ProjectType(props) {
+  // const total = useSelector((state) => state.total);
   const dispatch = useDispatch();
-  const [radioState, setRadioState] = useState("advertise");
-  const [hasChanged, setHasChanged] = useState(1000); // Value to be tracked as input is selected
+  const [radioState, setRadioState] = useState(null);
+  const [hasChanged, setHasChanged] = useState(null); // Value to be tracked as input is selected
   const [error, setError] = useState(null);
-  const helpText = require("./project-type-help-text.json");
+  const options = require("./options.json");
 
   const classes = useStyles();
 
-  const exchange = (v) => {
+  const exchange = (value) => {
+    let e = parseInt(value);
+    setRadioState(e);
     dispatch({ type: "SUBTRACT_TOTAL", value: hasChanged });
-    dispatch({ type: "ADD_TOTAL", value: v });
-    setHasChanged(v);
-    setError(null);
-  };
-
-  const setCost = (e) => {
-    setRadioState(e.target.value);
-    switch (e.target.value) {
-      case "advertise":
-        exchange(1000);
-        break;
-      case "blog":
-        exchange(2000);
-        break;
-      case "ecommerce":
-        exchange(3000);
-        break;
-      case "business":
-        exchange(4000);
-        break;
-      default:
-        setError("We need to know the project type");
-        break;
-    }
+    dispatch({ type: "ADD_TOTAL", value: e });
+    setHasChanged(e);
+    error && setError(null);
   };
 
   const RadioLabel = (props) => {
+    const [showingHelp, setShowingHelp] = useState(false);
+
     return (
+      <div>
         <div className={classes.labelRoot}>
           <FormControlLabel
             value={props.value}
             control={<Radio />}
             label={props.label}
           />
-          <IconButton>
-            <HelpOutlineRounded />
+          <IconButton
+            onClick={
+              !showingHelp
+                ? () => setShowingHelp(true)
+                : () => setShowingHelp(false)
+            }
+          >
+            {!showingHelp ? <HelpOutlineRounded /> : <Close />}
           </IconButton>
-        </div>)
+        </div>
+        <Grow in={showingHelp} unmountOnExit>
+          <HelpText text={props.help} side={props.side}/>
+        </Grow>
+      </div>
+    );
   };
+
+  useEffect(() => {
+    if (Array.isArray(options)) {
+      var lowest = Number.POSITIVE_INFINITY;
+      var tmp;
+      for (var i = options.length - 1; i >= 0; i--) {
+        tmp = options[i].value;
+        if (tmp < lowest) lowest = tmp;
+      }
+      setRadioState(lowest);
+      setHasChanged(lowest);
+    }
+  }, []);
 
   return (
     <FormControl className={classes.rootRadio}>
       <FormLabel component={"legend"}>Project Type</FormLabel>
       <RadioGroup
-        name={"e-commerce"}
-        aria-label={"e-commerce-status"}
+        name={"project-type"}
+        aria-label={"project-type"}
         value={radioState}
-        onChange={(e) => setCost(e)}
+        onChange={(e) => exchange(e.target.value)}
       >
-        <RadioLabel value={"advertise"} label={"Advertising Website"} />
-        
-
-        <div className={classes.labelRoot}>
-          <FormControlLabel
-            value={"blog"}
-            control={<Radio />}
-            label={"Blog Personal/Business"}
-          />
-          <IconButton>
-            <HelpOutlineRounded />
-          </IconButton>
-        </div>
-
-        <div className={classes.labelRoot}>
-          <FormControlLabel
-            value={"ecommerce"}
-            control={<Radio />}
-            label={"E-commerce Website/Application"}
-          />
-          <IconButton>
-            <HelpOutlineRounded />
-          </IconButton>
-        </div>
-
-        <div className={classes.labelRoot}>
-          <FormControlLabel
-            value={"business"}
-            control={<Radio />}
-            label={"Business Website/Application"}
-          />
-          <IconButton>
-            <HelpOutlineRounded />
-          </IconButton>
-        </div>
+        {Array.isArray(options) &&
+          options.map((o, i) => (
+            <RadioLabel
+              key={i}
+              value={o.value}
+              label={o.label}
+              help={o.description}
+              side={i}
+            />
+          ))}
         {error && <p className={"error-text"}>{error}</p>}
       </RadioGroup>
     </FormControl>
